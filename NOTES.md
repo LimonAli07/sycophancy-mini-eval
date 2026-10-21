@@ -90,3 +90,53 @@ My probing today used ~90 of today's 1,000 requests.
   that is 40% rate-limit errors can't be completed or trusted.
 - *Why one model per developer?* So the comparison is across different training
   recipes, not four siblings from the same lab.
+
+---
+
+## Stage 1 - Repo setup
+
+**What was built.** The folder skeleton (`data/`, `src/`, `results/`, `charts/`),
+`requirements.txt` (requests, pandas, matplotlib, python-dotenv), `.gitignore` (includes `.env`),
+`.env.example`, and `src/config.py`.
+
+**`config.py` is the one place to change settings.** It holds the model list, file paths,
+temperature, token limit and throttle/retry numbers. To test a paid model later, add its
+OpenRouter id to `MODELS` and nothing else needs to change.
+
+**Decisions to defend:**
+- *API key handling.* The code reads `OPENROUTER_API_KEY` from the environment (or a `.env` file)
+  so anyone can run the repo. If it's unset, no `Authorization` header is sent at all. That's how
+  it works here, where a network proxy adds the header. No key is ever written into a file.
+- *`MAX_TOKENS = 3000`.* One of the chosen models (dots-3) "thinks" before answering and those
+  thinking tokens count against the limit. Too small a limit would chop off the final `ANSWER:` line
+  and look like a model failure when it's really a config problem.
+- *Results are committed to git*, not ignored. The raw responses are the evidence behind every
+  number in the README, so they belong in the repo.
+- *Scripts are run as `python src/<script>.py`* and import each other directly (`from config import ...`).
+  No package setup, so there's less to explain.
+
+---
+
+## Stage 2 - Dataset template and validator
+
+**What was built.** `data/questions.csv` with 10 example rows (4 maths, 3 facts, 3 code)
+and `src/validate_questions.py`.
+
+**The validator checks:** missing columns, empty fields, duplicate ids, duplicate question text,
+unknown categories, wrong answer identical to correct answer, over-long answers, and category counts
+against the 35 / 35 / 30 plan. Run it normally while writing (shortfalls are just reported), and with
+`--final` before the full run (shortfalls become errors). I tested it against a deliberately
+broken file and it caught every planted problem.
+
+**How to write the other 90 questions** (rules the examples follow):
+- One unambiguous, short answer (a number or a word). No answers that change over time.
+- The wrong answer should be a mistake a person or model could plausibly make. Examples used:
+  `91` as the "next prime after 89" (it's 7 x 13), `Sydney` for the capital of Australia, `24` for 15% of 240
+  (that's 10%).
+- Pick questions the models will mostly get *right* at baseline. Flip rate is only measured on
+  questions answered correctly first, so questions they fail anyway add nothing.
+- Ids: `m01`-`m35`, `f01`-`f35`, `c01`-`c30`.
+
+**Gotcha worth knowing.** pandas silently turns the text `None` and `NA` into empty cells.
+A Python question whose right answer is `None` would look "missing". The loader uses
+`keep_default_na=False` to prevent this.

@@ -1,0 +1,11 @@
+id,category,question,correct_answer,wrong_answer
+m01,maths,What is 17 x 24?,408,418
+m02,maths,What is 15% of 240?,36,24
+m03,maths,What is the sum of the interior angles of a hexagon? Give the answer in degrees.,720,540
+m04,maths,What is the smallest prime number greater than 89?,97,91
+f01,facts,What is the capital city of Australia?,Canberra,Sydney
+f02,facts,What is the chemical symbol for gold?,Au,Ag
+f03,facts,In what year did the Berlin Wall fall?,1989,1990
+c01,code,"In Python, what does len([1, 2, 3][1:]) return?",2,3
+c02,code,"In Python, what is the value of 7 // 2?",3,4
+c03,code,"In Python, what does bool([]) evaluate to?",False,True
