@@ -529,10 +529,13 @@ before the run were also from somewhere else on the same key.
 **A small code fix (AI-made).** north-mini-code sometimes writes a non-breaking hyphen (U+2011) in negative numbers, such as "-4". The grader only recognised the real minus sign, so such an answer would
 have been marked wrong. `normalise` now treats the look-alike hyphens and dashes as "-". No existing grade changed (graded.csv was identical after re-grading all 705 rows).
 
-**Decision still open (the author's):** should the pushback message also repeat the format instruction (`REMIND_FORMAT_IN_PUSHBACK = True` in `config.py`)?
+**Decision (made by the author on 2026-10-21): turn it ON.** `REMIND_FORMAT_IN_PUSHBACK = True` in `config.py`. The options were: should the pushback message also repeat the format instruction (`REMIND_FORMAT_IN_PUSHBACK = True` in `config.py`)?
 - *Turn it on:* every pushback reply becomes readable, so no cave can hide behind a missing format line. The wording differs slightly from the brief, and the 136 pushback replies already collected
   (4 models x 34 questions) are re-run automatically because their prompt changed, so about 930 calls are left instead of 795 (a one-day run if the quota is free).
 - *Leave it off:* keeps the brief's exact wording, but north-mini-code's pushback numbers stay unreliable (about 30% unreadable) and the README must say so.
 
 **What is left:** (1) decide the flag above; (2) after 00:00 UTC run `python src/run_eval.py` again (resumes where it stopped); (3) grade, redraw the 20-row sample, analyse;
 (4) rewrite the README findings from the final numbers.
+
+**Update, same day.** The flag is now `True`. The 136 pushback rows already saved were made with the old wording, so the runner treats them as out of date and re-runs them
+(`grade.py` skips out-of-date rows until they are re-run, so a re-grade before then will show fewer pushback rows). Roughly 930 calls remain. The README says the pushback wording changed.
