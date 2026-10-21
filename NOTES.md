@@ -456,3 +456,55 @@ A fair answer: *"I designed the experiment and the metric and set the rules. Cla
 the extra questions. I can explain the design and what every part does. The advanced parts (retry logic, error-bar formula,
 chart styling, calling Claude from Python) are AI-made, and the table above says what each one does."*
 Don't claim you hand-wrote or hand-verified things you didn't.
+
+---
+
+## Stage 9 - Claude Haiku run, the OpenRouter key failure, and results
+
+**Why Haiku was added.** The author suggested using a Claude model for the part the free quota couldn't cover. I did **not** use it to fill
+in missing rows for the free models, because the rule is that each model's results come only from that model. Haiku is a **separate, fifth model**
+(`claude-cli/claude-haiku-5-5`), run on all 100 questions.
+
+**How it was run** (`src/run_claude_cli.py`): the `claude` command-line tool, called once per prompt, with all tools, plugins and MCP servers
+switched off and a one-line system prompt. The exact model id `claude-haiku-5-5` is requested (not a moving alias) and every reply is checked
+to say that model answered. The pushback turn continues the *same saved conversation* as the baseline (`--resume`), so it is a real two-turn chat.
+Cost was small (a few US cents per 100 calls).
+
+**It is not like-for-like with the other four models, and the README says so:**
+- Temperature can't be set from the command line, so each answer is one ordinary random sample (the others ran at temperature 0).
+- The command-line tool adds about 1,300 tokens of its own text to each request. That was reduced from about 19,000 by switching off settings, plugins and MCP servers, but can't be removed completely.
+- The model may "think" before it answers. That thinking is not saved.
+
+**The OpenRouter key stopped working.** At 11:41 UTC on 2026-10-21 the key worked (200, 342 free requests left of 1,000). By 11:54 UTC `/api/v1/key` returned
+`401 {"error":{"message":"User not found."}}` and kept doing so on repeated checks, although the key's recorded expiry was 23:45 UTC. I can't tell why from here,
+so I stopped all OpenRouter work as instructed ("401 = stop and tell me"). Another fact worth knowing: 658 of that day's free requests were already used at 11:41,
+but only about 220 came from this project's runs. Something else on the same key used the rest.
+**Consequence:** the four free models have only the 10-question test run. They were never run on the 90 new questions.
+
+**Results (see the README for the table and charts):**
+- Haiku, 100 questions: 100/100 correct at baseline, and **0 flips** under both pressure and pushback.
+- Free models, 10 questions each: 10/10 correct at baseline, **0 flips** (one north-mini-code pushback reply had no `ANSWER:` line, so it is unparseable).
+- Across all 279 readable pressure/pushback replies, no model gave the wrong answer I suggested.
+
+**Checks on that result.** Because "nothing happened" is easy to get by mistake, I checked the grader wasn't being too generous: it only forgives formatting
+(for example 113 Haiku replies wrapped the answer in `<answer>` tags), no extracted answer ever equalled the suggested wrong answer, and I read Haiku's replies on the
+trickiest questions (`round(2.5)`, `all([])`, the average-speed and discount questions, `[10, 9, 1].sort()`): it held its answer and explained the common mistake.
+A 20-row sample (`results/manual_check.csv`) agreed with the grader on all 20. **That check was done by Claude, not a human**, and every row in it was `correct`,
+so it can't test how the grader treats wrong or missing answers. A human spot-check is still worth doing.
+
+### Decisions to defend
+
+- **A null result, reported as a null result.** Zero flips is the finding. I did not make the questions harder after seeing it and re-run until something moved;
+  the question set was fixed before any model saw it. The honest reading is a *ceiling effect*: easy, well-known questions that every model gets right. The way to learn more is a new
+  experiment with harder questions, which is listed under Next Steps, not a quiet change to this one.
+- **Error bars carry the message.** "0%" from 100 questions (true rate probably under 4%) and "0%" from 10 questions (could be up to about 28%) are very different claims.
+  That is why every chart and table shows n and the confidence interval.
+- **Haiku stays a separate model, flagged as not like-for-like,** rather than being averaged in with the free models or used to fill their gaps.
+
+### What is left (this replaces the earlier to-do list)
+
+1. **Get a working OpenRouter key** (openrouter.ai/keys) and update the network secret. Then `python src/run_eval.py` finishes the four free models: about 1,080 calls,
+   2 days at the free limit (1,000/day), and safe to stop and re-run.
+2. **Decide `REMIND_FORMAT_IN_PUSHBACK`** (see Stage 4) before that run. Only 1 of 40 free-model pushback replies lost its format line, so it matters little so far.
+3. **Have a person read the 32 fact questions and the 20-row check,** since both were checked by AI.
+4. **Consider harder questions** so that models don't get everything right (the main reason there is nothing to measure).
