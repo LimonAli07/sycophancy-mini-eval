@@ -193,9 +193,13 @@ def ask_model(model, messages):
                     body = r.json()
                 except ValueError:
                     body = {}
-                # OpenRouter sometimes returns HTTP 200 with an error and no "choices" in the body.
-                if "choices" not in body:
+                # OpenRouter sometimes returns HTTP 200 with an error and no (or empty) "choices".
+                if not body.get("choices"):
                     problem = f"error inside HTTP 200: {str(body.get('error'))[:150]}"
+                elif body["choices"][0].get("finish_reason") == "error" or body["choices"][0].get("error"):
+                    # The provider failed partway through writing the reply. That is a failure,
+                    # not an answer, so it must not be saved (it would otherwise look like an empty reply).
+                    problem = f"error while generating: {str(body['choices'][0].get('error'))[:150]}"
                 else:
                     reply = parse_reply(model, body)
                     # An empty reply is retried a few times, then kept as-is so a model that
@@ -293,6 +297,42 @@ def warn_if_key_expires_soon(key_info):
             print(f"WARNING: this API key expires at {expires} - make sure it lasts for the whole run.")
 
 
+def messages_for(question, model, condition, done):
+    """The messages to send for this call, or None if they can't be built yet.
+
+    Pushback needs a usable saved baseline reply to push back against.
+    """
+    baseline_response = None
+    if condition == "pushback":
+        baseline_row = done.get((model, question["id"], "baseline"))
+        if baseline_row is None or not baseline_row["response"].strip():
+            return None
+        baseline_response = baseline_row["response"]
+    return build_messages(condition, question, baseline_response)
+
+
+def is_done(done, model, question, condition, messages):
+    """A saved row only counts if it was produced by the SAME prompt we would send now.
+
+    Without this check, editing a question (or changing the pushback wording) would leave stale
+    rows that a re-run skips, and the results would silently mix old and new prompts.
+    """
+    row = done.get((model, question["id"], condition))
+    return row is not None and row.get("messages") == messages
+
+
+def count_to_do(questions, models, done):
+    """How many calls still need to be made."""
+    count = 0
+    for q in questions:
+        for model in models:
+            for condition in CONDITIONS:
+                messages = messages_for(q, model, condition, done)
+                if messages is None or not is_done(done, model, q, condition, messages):
+                    count += 1
+    return count
+
+
 def main():
     args = parse_args()
     load_dotenv()  # picks up OPENROUTER_API_KEY from a .env file, if there is one
@@ -304,7 +344,7 @@ def main():
     models = choose_models(args.models)
 
     done = load_done()
-    pending = sum((m, q["id"], c) not in done for q in questions for m in models for c in CONDITIONS)
+    pending = count_to_do(questions, models, done)
     total = len(questions) * len(models) * len(CONDITIONS)
     print(f"{len(questions)} questions x {len(models)} models x {len(CONDITIONS)} conditions = {total} calls; "
           f"{total - pending} already done, {pending} to do "
@@ -329,22 +369,19 @@ def main():
         for q in questions:
             for model in models:
                 for condition in CONDITIONS:
-                    if model in paused or (model, q["id"], condition) in done:
+                    if model in paused:
                         continue
-
-                    baseline_response = None
-                    if condition == "pushback":
-                        baseline_row = done.get((model, q["id"], "baseline"))
-                        if baseline_row is None or not baseline_row["response"].strip():
-                            skipped_pushback += 1  # nothing to push back against (yet)
-                            continue
-                        baseline_response = baseline_row["response"]
+                    messages = messages_for(q, model, condition, done)
+                    if messages is None:
+                        skipped_pushback += 1  # no usable baseline reply to push back against
+                        continue
+                    if is_done(done, model, q, condition, messages):
+                        continue
 
                     # Every QUOTA_CHECK_EVERY calls, make sure we haven't used up today's free requests.
                     if calls_made % QUOTA_CHECK_EVERY == 0 and calls_made > 0:
                         stop_if_daily_cap_reached(model)
 
-                    messages = build_messages(condition, q, baseline_response)
                     try:
                         reply = ask_model(model, messages)
                     except ModelUnavailable as error:
@@ -375,10 +412,13 @@ def main():
         print(f"\nInterrupted. {calls_made} calls were saved this run. Re-run to carry on.")
         sys.exit(130)
 
-    remaining = sum((m, q["id"], c) not in done for q in questions for m in models for c in CONDITIONS)
+    remaining = count_to_do(questions, models, done)
     print(f"\nFinished this run: {calls_made} calls saved, {remaining} still to do.")
     for model, reason in paused.items():
         print(f"  PAUSED {short_name(model)}: {reason}")
+    if skipped_pushback:
+        print(f"  {skipped_pushback} pushback call(s) skipped because that model's baseline reply is "
+              f"missing or empty (these stay in the 'still to do' count).")
     if remaining:
         print("Re-run the same command to resume (it skips everything already saved).")
 

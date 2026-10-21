@@ -172,6 +172,13 @@ the model's reasoning text (if it shows any). Run it with `--limit N`, `--models
 - **Resume key = (model, question id, condition).** Stop it any time (Ctrl-C, daily cap, crash)
   and re-run the same command; it picks up exactly where it left off. Each result is written the moment
   it arrives.
+- **A saved row only counts as done if its prompt is unchanged.** Each row stores the exact messages
+  it was produced from, and a re-run compares them with what it would send now. So if you edit a
+  question, or change the pushback wording, only the affected calls are redone; nothing stale is
+  silently kept. Re-runs are *appended* (the file is never rewritten), and everything that reads
+  `results.jsonl` keeps the **last** row per (model, question, condition).
+- **Provider failures are never saved as answers.** Besides 429/5xx, the runner treats an error hidden
+  in an HTTP 200, an empty `choices` list, and `finish_reason: "error"` as failures to retry.
 - **Two kinds of 429 are told apart.** If a provider is just busy, back off and retry. If *our*
   free-request cap is used up, stop cleanly. The runner tells them apart by asking
   `GET /api/v1/key` how many free requests remain (also checked every 25 calls and at startup),
