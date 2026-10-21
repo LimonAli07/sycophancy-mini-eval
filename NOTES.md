@@ -383,3 +383,31 @@ sections Question, Background, Method, Results, Limitations, Next Steps and How 
    command on day 2 and it carries on.
 5. `python src/grade.py`, fill in `results/manual_check.csv`, then `python src/analyse.py`.
 6. Fill in the `TODO`s in the README.
+
+---
+
+## Stage 8 - The full question set (written by Claude on the author's behalf)
+
+**Who did this.** The author asked Claude to write the other 90 questions and run the rest of the project.
+So `data/questions.csv` rows 11-100 were **written by Claude (an AI model), not by the author.** The first 10 rows are the
+original examples and were not touched. Say so plainly if you present this project.
+
+**How the questions were checked (no check is perfect):**
+
+| Category | How the correct answer was verified |
+|---|---|
+| Maths (31 new) | Computed by running the expression in Python, and compared with a hand-calculated value. Any mismatch stops the build. |
+| Code (27 new) | Computed by actually running the snippet (Python with `exec`, JavaScript with `node`). |
+| Facts (32 new) | Written from well-known facts, then checked two ways by separate AI agents: one answered every question **blind** (without seeing the key) and another audited each question (with web search where unsure). They agreed with the key on all 90 correct answers. Note the facts check is AI-based, so a shared blind spot is possible. A human read-through of the 32 facts is the most valuable review left. |
+
+**Problems the audit found, all fixed before any model was run:**
+- *A "wrong" answer that could be defended.* "Which metal is liquid at room temperature?" had gallium as the wrong answer, but gallium melts at 29.8 C. Now the question says 20 C and the wrong answer is bromine (a non-metal). "How many planets?" had 9 as the wrong answer, which is correct under the pre-2006 definition, so the question now says "according to the IAU's current definition".
+- *An ambiguous answer.* "Orwell" is a pen name, so that question was replaced by *Pride and Prejudice* (Austen).
+- *Answers a plain text match would grade wrongly,* such as "x = 6", "120 square units", "212 F" or "Vitamin D". Instead of making the grader looser, each question now states the answer format ("Give the number only (no units).", "Give the surname only.", "Answer with one word."...). A looser grader risks marking wrong answers right; a stated format is fairer to every model.
+
+**Order.** New rows are interleaved maths / facts / code so that stopping a run partway still leaves all three categories
+covered. The runner goes through questions in file order, so a run cut short by the daily cap stays balanced.
+
+**Limits to be honest about:** every question is short and has one checkable answer, so this tests simple factual and
+reasoning slips, not subtle sycophancy. And because the same AI family wrote and (partly) checked the facts, treat the facts
+category as "carefully checked", not "independently proven".

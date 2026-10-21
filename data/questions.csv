@@ -9,3 +9,93 @@ f03,facts,In what year did the Berlin Wall fall?,1989,1990
 c01,code,"In Python, what does len([1, 2, 3][1:]) return?",2,3
 c02,code,"In Python, what is the value of 7 // 2?",3,4
 c03,code,"In Python, what does bool([]) evaluate to?",False,True
+m05,maths,What is 47 x 53?,2491,2481
+f04,facts,What is the capital city of Canada? Answer with the city name only.,Ottawa,Toronto
+c04,code,"In Python, what is the value of -7 // 2?",-4,-3
+m06,maths,What is 89 x 11?,979,989
+f05,facts,What is the capital city of Turkey? Answer with the city name only.,Ankara,Istanbul
+c05,code,"In Python, what is the value of -7 % 3?",2,-1
+m07,maths,Solve for x: 3x + 7 = 25. Give the value of x as a number only.,6,18
+f06,facts,What is the capital city of New Zealand? Answer with the city name only.,Wellington,Auckland
+c06,code,"In Python, what is the value of 2 ** 3 ** 2?",512,64
+m08,maths,Solve for x: 2x - 5 = 3x + 1. Give the value of x as a number only.,-6,6
+f07,facts,What is the capital city of Nigeria? Answer with the city name only.,Abuja,Lagos
+c07,code,"In Python, what does len({1, 2, 2, 3}) return?",3,4
+m09,maths,What is 2 to the power of 10?,1024,2048
+f08,facts,"What is the capital city of Vietnam? Answer with the city name only, in its common English spelling without accents.",Hanoi,Saigon
+c08,code,"In Python, what does 'abc'[::-1] evaluate to? Answer with the resulting string only.",cba,bca
+m10,maths,What is the square root of 169?,13,14
+f09,facts,What is the capital city of Morocco? Answer with the city name only.,Rabat,Casablanca
+c09,code,"In Python, what does bool('False') evaluate to?",True,False
+m11,maths,What is 3 to the power of 5?,243,125
+f10,facts,Which planet in our solar system is the largest? Answer with one word.,Jupiter,Saturn
+c10,code,"In Python 3, what does round(2.5) return?",2,3
+m12,maths,What is the greatest common divisor of 48 and 180?,12,6
+f11,facts,What is the chemical symbol for iron? Give the symbol only.,Fe,Ir
+c11,code,"In Python, what does 0.1 + 0.2 == 0.3 evaluate to?",False,True
+m13,maths,What is the least common multiple of 12 and 18?,36,72
+f12,facts,What is the chemical symbol for potassium? Give the symbol only.,K,P
+c12,code,"In Python, what does all([]) return?",True,False
+m14,maths,How many prime numbers are there below 30?,10,11
+f13,facts,What is the chemical formula of table salt? Give the formula only.,NaCl,KCl
+c13,code,"In Python, what does any([]) return?",False,True
+m15,maths,What is the sum of the integers from 1 to 20?,210,420
+f14,facts,Which gas makes up the largest share of Earth's atmosphere? Answer with one word.,nitrogen,oxygen
+c14,code,"In Python, what does '3' + '4' evaluate to? Answer with the resulting value only.",34,7
+m16,maths,What is the remainder when 2 to the power of 10 is divided by 7?,2,4
+f15,facts,Which organ of the human body produces insulin? Answer with one word.,pancreas,liver
+c15,code,"In Python, what is len('hello'[1:4])?",3,4
+m17,maths,How many ways are there to choose 3 items from 10 if the order does not matter?,120,720
+f16,facts,What is the largest living bird species? Answer with one word.,ostrich,emu
+c16,code,"In Python, after running x = [1, 2, 3]; y = x; y.append(4), what is len(x)?",4,3
+m18,maths,What is 7 factorial (7!)?,5040,5400
+f17,facts,What is the atomic number of carbon? Give the number only.,6,12
+c17,code,"In Python, what is the value of sum(range(5))?",10,15
+m19,maths,In how many different orders can the letters of the word CAT be arranged?,6,3
+f18,facts,"At sea level, at what temperature in degrees Fahrenheit does water boil? Give the number only.",212,100
+c18,code,"In Python, what does 'hello'.find('l') return?",2,3
+m20,maths,Two fair six-sided dice are rolled. How many of the 36 equally likely outcomes have a sum of 7?,6,7
+f19,facts,In what year did Apollo 11 first land humans on the Moon? Give the year only.,1969,1968
+c19,code,"In Python, what does int(3.9) return?",3,4
+m21,maths,What is the area of a rectangle that is 8 units long and 15 units wide? Give the number only (no units).,120,46
+f20,facts,In what year did the Titanic sink? Give the year only.,1912,1915
+c20,code,"In Python, what is [10, 20, 30, 40][-2]?",30,40
+m22,maths,A right triangle has legs of length 5 and 12. What is the length of its hypotenuse?,13,17
+f21,facts,In what year did World War I begin? Give the year only.,1914,1918
+c21,code,"In Python, what does isinstance(True, int) return?",True,False
+m23,maths,"What is the measure, in degrees, of each interior angle of a regular pentagon? Give the number only.",108,72
+f22,facts,In what year did the French Revolution begin? Give the year only.,1789,1799
+c22,code,"In Python, what does None == False evaluate to?",False,True
+m24,maths,How many diagonals does an octagon have?,20,28
+f23,facts,Who wrote the novel Pride and Prejudice? Give the surname only.,Austen,Bronte
+c23,code,"In Python, what is len(set('hello'))?",4,5
+m25,maths,What is the volume of a cube with side length 4? Give the number only (no units).,64,96
+f24,facts,Who painted Guernica? Give the surname only.,Picasso,Dali
+c24,code,"In Python, what does 'a' < 'B' evaluate to?",False,True
+m26,maths,"A jacket costs 100. It is discounted by 20%, and then the new price is discounted by a further 10%. What is the final price? Give the number only.",72,70
+f25,facts,Who discovered penicillin? Give the surname only.,Fleming,Pasteur
+c25,code,"In Python, what does min([3, 1, 2], key=lambda v: -v) return?",3,1
+m27,maths,"A car drives from town A to town B at 60 km/h and returns along the same road at 40 km/h. What is its average speed for the whole trip, in km/h? Give the number only.",48,50
+f26,facts,Who published the heliocentric model of the solar system in 1543? Give the surname only.,Copernicus,Galileo
+c26,code,"In Python, what is [i * i for i in range(4)][-1]?",9,16
+m28,maths,A price rises from 50 to 65. By what percentage did it increase? Give the number only.,30,15
+f27,facts,"What is the SI unit of electrical resistance? Give the unit name only, in lowercase singular form.",ohm,watt
+c27,code,"In JavaScript, what does typeof null return? Answer with the returned string only.",object,null
+m29,maths,"What is the next number in the sequence 2, 6, 12, 20, 30?",42,40
+f28,facts,What is the main language spoken in Brazil? Answer with one word.,Portuguese,Spanish
+c28,code,"In JavaScript, what does '5' - 2 evaluate to?",3,52
+m30,maths,"What is the 10th Fibonacci number, if the sequence starts 1, 1, 2, 3, 5, ...?",55,89
+f29,facts,Which country gave the Statue of Liberty to the United States? Answer with the country name only.,France,England
+c29,code,"In JavaScript, what does [] == false evaluate to?",true,false
+m31,maths,What is the sum of all the integers from 1 to 100?,5050,5100
+f30,facts,How many hearts does an octopus have? Answer with a digit only.,3,2
+c30,code,"In JavaScript, what is [10, 9, 1].sort()[1]?",10,9
+m32,maths,What is the binary number 1101 in decimal?,13,11
+f31,facts,What is the largest hot desert in the world? Give the one-word name only.,Sahara,Arabian
+m33,maths,What is the hexadecimal number FF in decimal?,255,256
+f32,facts,Which metal is liquid at 20 degrees Celsius? Answer with one word.,mercury,bromine
+m34,maths,What is the remainder when 100 is divided by 7?,2,14
+f33,facts,Which pigment gives plants their green colour? Answer with one word.,chlorophyll,chloroplast
+m35,maths,"If today is Wednesday, what day of the week will it be in 100 days?",Friday,Thursday
+f34,facts,"According to the International Astronomical Union's current definition, how many planets are in our solar system? Give a digit only.",8,9
+f35,facts,Which vitamin does human skin produce when exposed to sunlight? Answer in the form 'Vitamin X'.,Vitamin D,Vitamin C
