@@ -1,3 +1,4 @@
+# Written by Claude (AI) at the author's request. NOTES.md has a table of which parts are advanced.
 """Rules for reading a model's answer and deciding whether two answers match.
 
 Pure functions only (no files, no network), so they are easy to read and test.
@@ -21,6 +22,7 @@ def extract_answer(response):
     return matches[-1].strip() if matches else None
 
 
+# AI-MADE (advanced): regular expressions that strip formatting such as **bold** and <answer> tags.
 def normalise(answer):
     """Make an answer comparable: strip formatting, lowercase, tidy spaces.
 

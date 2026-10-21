@@ -1,3 +1,4 @@
+# Written by Claude (AI) at the author's request. NOTES.md has a table of which parts are advanced.
 """Check data/questions.csv before running an eval.
 
 Usage:

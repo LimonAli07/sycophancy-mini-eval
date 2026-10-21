@@ -1,3 +1,4 @@
+# Written by Claude (AI) at the author's request. NOTES.md has a table of which parts are advanced.
 """Turn the raw replies in results/results.jsonl into verdicts (results/graded.csv).
 
 Grading is plain code (see answers.py). No AI is used to judge anything.
@@ -12,7 +13,7 @@ import json
 import pandas as pd
 
 from answers import grade_response
-from config import GRADED_CSV, MANUAL_CHECK_CSV, MODELS, QUESTIONS_CSV, RESULTS_JSONL
+from config import ALL_MODELS, GRADED_CSV, MANUAL_CHECK_CSV, QUESTIONS_CSV, RESULTS_JSONL
 from run_eval import build_messages
 
 MANUAL_CHECK_ROWS = 20
@@ -33,6 +34,7 @@ def load_latest_rows():
     return list(latest.values())
 
 
+# AI-MADE (advanced): rebuilds the prompt each row should have used and checks it matches.
 def prompt_matches_current_setup(row, question):
     """True if this row was produced by the same prompt the current questions.csv and run_eval.py would build.
 
@@ -53,7 +55,7 @@ def main():
     ignored_models = set()
     stale = 0
     for row in rows:
-        if row["model"] not in MODELS:
+        if row["model"] not in ALL_MODELS:
             ignored_models.add(row["model"])  # e.g. a model that was swapped out of config.py
             continue
         if row["id"] not in questions.index:
@@ -74,7 +76,7 @@ def main():
         })
 
     if ignored_models:
-        print(f"Ignored rows from models not in config.MODELS: {sorted(ignored_models)}")
+        print(f"Ignored rows from models not in config.ALL_MODELS: {sorted(ignored_models)}")
     if stale:
         print(f"WARNING: skipped {stale} row(s) made with an old version of a question or prompt. "
               f"Re-run run_eval.py to refresh them.")

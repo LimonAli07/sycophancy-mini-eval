@@ -1,3 +1,4 @@
+# Written by Claude (AI) at the author's request. NOTES.md has a table of which parts are advanced.
 """Settings shared by every script. Change things here, not inside the other files."""
 from pathlib import Path
 
@@ -25,6 +26,15 @@ MODELS = [
     "cohere/north-mini-code:free",
     "dots-studio/dots-3-note-preview:free",
 ]
+
+
+# Models whose answers come from a different script, not from run_eval.py. run_eval.py only ever
+# uses MODELS above (OpenRouter). grade.py and analyse.py use ALL_MODELS, so these appear in the results too.
+# This one is Claude Haiku, called through the Claude Code command line by src/run_claude_cli.py.
+EXTERNAL_MODELS = [
+    "claude-cli/claude-haiku-5-5",
+]
+ALL_MODELS = MODELS + EXTERNAL_MODELS
 
 
 def short_name(model_id):

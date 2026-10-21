@@ -411,3 +411,48 @@ covered. The runner goes through questions in file order, so a run cut short by 
 **Limits to be honest about:** every question is short and has one checkable answer, so this tests simple factual and
 reasoning slips, not subtle sycophancy. And because the same AI family wrote and (partly) checked the facts, treat the facts
 category as "carefully checked", not "independently proven".
+
+---
+
+## Which parts are AI-made (and how hard each one is)
+
+**Plain version:** *all* of the code in `src/`, the 90 extra questions, and this write-up were written by Claude
+(an AI model) because the author asked it to. The research question, the experiment design (three conditions,
+the flip-rate metric, three question categories), the stage-by-stage plan and the rules (no AI grading, never
+swap a model mid-run) came from the author's brief. Every source file starts with a "Written by Claude (AI)" line, and the
+harder functions are marked `AI-MADE (advanced)` in the code so nobody has to guess.
+
+| File | What it does | How hard | Say it in one sentence |
+|---|---|---|---|
+| `src/config.py` | Settings: model list, file paths, numbers | Easy | "The one place where the settings live." |
+| `src/validate_questions.py` | Checks the question CSV | Easy | "Counts rows per category and catches empty fields and duplicates." |
+| `src/grade.py` | Gives each reply a verdict | Medium | "Reads the saved replies, asks `answers.py` for a verdict, saves a CSV." |
+| `src/answers.py` | Reads and compares answers | Medium (the regular expressions are the hard bit) | "Takes the text after `ANSWER:`, strips formatting, then compares as numbers or lowercase text." |
+| `src/analyse.py` | Flip rates, charts, examples | Medium; **charts and error bars are advanced** | "Counts how often a model that was right at baseline became wrong, and draws it." |
+| `src/run_eval.py` | Asks the OpenRouter models | **Advanced** | "Sends the three prompts, retries when the server is busy, and never repeats finished work." |
+| `src/run_claude_cli.py` | Asks Claude Haiku | **Advanced** | "Runs the `claude` command-line program for each prompt and saves the reply the same way." |
+| `data/questions.csv` rows 11-100 | The extra questions | n/a | "AI-written, then checked by running code and by separate AI reviewers." (Stage 8) |
+
+### The advanced bits, each in plain English
+
+- **Retries and backoff** (`ask_model`): if the server says "too busy", wait 5 seconds and try again, then 10, then 20...
+  up to 6 times. Never save a failed attempt as if it were an answer.
+- **Daily-cap check** (`get_key_info`): ask OpenRouter how many free requests are left today and stop cleanly when it's nearly zero.
+- **Resume without repeating** (`is_done`): each saved row remembers the exact prompt that made it. A re-run skips a row only if
+  today's prompt is identical, so edits to a question are never silently ignored.
+- **Same-model check** (`same_model`): every reply says which model answered. The runner refuses to save a reply from a different model.
+- **Regular expressions** (`normalise`): small patterns that remove `**bold**`, quotes, `<answer>` tags and trailing full stops
+  so "**408**." and "408" count as the same answer.
+- **Error bars** (`wilson_interval`): a standard formula for how uncertain a percentage is when it comes from few questions.
+  Read the bar as "the true rate could plausibly be anywhere in here".
+- **Charts** (`style_axes`, `draw_bars`, `plot_by_*`): matplotlib code. It is long because of styling (colours, grid, labels),
+  not because the idea is hard.
+- **Calling Claude** (`ask_claude`): runs another program (`claude`) from Python, feeds it the prompt, and reads back
+  its JSON answer. For the pushback turn it continues the same saved conversation.
+
+### If you are asked about it
+
+A fair answer: *"I designed the experiment and the metric and set the rules. Claude, an AI coding assistant, wrote the code and
+the extra questions. I can explain the design and what every part does. The advanced parts (retry logic, error-bar formula,
+chart styling, calling Claude from Python) are AI-made, and the table above says what each one does."*
+Don't claim you hand-wrote or hand-verified things you didn't.

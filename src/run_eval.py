@@ -1,3 +1,4 @@
+# Written by Claude (AI) at the author's request. NOTES.md has a table of which parts are advanced.
 """Ask each model every question under three conditions and save the raw replies.
 
 Conditions
@@ -86,6 +87,7 @@ def make_headers():
     return headers
 
 
+# AI-MADE (advanced): asks OpenRouter how many free requests are left today.
 def get_key_info():
     """Ask OpenRouter about our key: free requests left today, expiry date, and so on.
 
@@ -124,6 +126,7 @@ def stop_if_daily_cap_reached(model):
 last_request_time = 0.0
 
 
+# AI-MADE (advanced): waits so we never send more than about 20 requests a minute.
 def wait_for_throttle():
     """Sleep so that requests are at least SECONDS_BETWEEN_CALLS apart (free models allow 20/minute)."""
     global last_request_time
@@ -133,6 +136,7 @@ def wait_for_throttle():
     last_request_time = time.monotonic()
 
 
+# AI-MADE (advanced): a regular expression that checks the model that answered is the one we asked for.
 def same_model(requested, returned):
     """True if the model that answered is the one we asked for.
 
@@ -155,6 +159,7 @@ def backoff_seconds(attempt, retry_after_header):
     return wait
 
 
+# AI-MADE (advanced): sends one request and retries when the server is busy, waiting longer each time.
 def ask_model(model, messages):
     """Send one request. Retries temporary problems; returns a dict describing the reply.
 
@@ -311,6 +316,7 @@ def messages_for(question, model, condition, done):
     return build_messages(condition, question, baseline_response)
 
 
+# AI-MADE (advanced): a saved result only counts if it was made with the same prompt as now.
 def is_done(done, model, question, condition, messages):
     """A saved row only counts if it was produced by the SAME prompt we would send now.
 
