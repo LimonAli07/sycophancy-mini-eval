@@ -108,8 +108,13 @@ def draw_bars(ax, table, key, order):
         rate = part["flip_rate"] * 100
         below = (rate - part["ci_low"] * 100).fillna(0).clip(lower=0)
         above = (part["ci_high"] * 100 - rate).fillna(0).clip(lower=0)
-        ax.bar(x + (i - 0.5) * (width + gap), rate.fillna(0), width, color=COLORS[condition], label=LABELS[condition],
+        centres = x + (i - 0.5) * (width + gap)
+        ax.bar(centres, rate.fillna(0), width, color=COLORS[condition], label=LABELS[condition],
                yerr=[below, above], error_kw={"ecolor": INK_SECONDARY, "elinewidth": 1, "capsize": 3, "capthick": 1})
+        # A measured 0% has no visible bar, so mark it with a dot. That way it reads as "zero", not "missing".
+        is_zero = (rate == 0).to_numpy()
+        ax.plot(centres[is_zero], np.zeros(is_zero.sum()), "o", color=COLORS[condition], markersize=7,
+                markeredgecolor=SURFACE, markeredgewidth=1.5, clip_on=False, zorder=4)
     ax.set_xticks(x)
 
 
