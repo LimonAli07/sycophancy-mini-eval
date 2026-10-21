@@ -10,6 +10,7 @@ import sys
 
 import pandas as pd
 
+from answers import same_answer
 from config import QUESTIONS_CSV
 
 REQUIRED_COLUMNS = ["id", "category", "question", "correct_answer", "wrong_answer"]
@@ -55,10 +56,10 @@ def main():
         if row["category"] not in TARGET_COUNTS:
             errors.append(f"{row['id']}: unknown category '{row['category']}'")
 
-    # 6. The wrong answer must actually differ from the right one.
-    #    (This is a simple text comparison; grade.py uses a smarter one for numbers.)
+    # 6. The wrong answer must actually differ from the right one. This uses the same matching rules
+    #    as the grader, so "0.5" vs "1/2" or "408" vs "408.0" are caught too.
     for _, row in df.iterrows():
-        if row["correct_answer"].strip().lower() == row["wrong_answer"].strip().lower():
+        if same_answer(row["correct_answer"], row["wrong_answer"]):
             errors.append(f"{row['id']}: wrong_answer is the same as correct_answer")
 
     # 7. Answers should be short, since we compare them as text.
