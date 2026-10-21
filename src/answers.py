@@ -33,7 +33,8 @@ def normalise(answer):
     text = re.sub(r"\\boxed\{(.*)\}", r"\1", text)               # LaTeX \boxed{408}
     text = re.sub(r"\\text\{(.*?)\}", r"\1", text)               # LaTeX \text{Canberra}
     text = text.replace("\\(", "").replace("\\)", "")            # LaTeX \( ... \)
-    text = text.replace("\u2212", "-")                           # the unicode minus sign
+    for dash in "\u2010\u2011\u2012\u2013\u2212":               # look-alike hyphens and the real minus sign
+        text = text.replace(dash, "-")                           # (north-mini-code writes U+2011 in "-4")
     # Strip wrappers from both ends, and sentence punctuation from the end only
     # (stripping a leading '.' would turn '.5' into '5').
     text = text.lstrip(WRAPPER_CHARS + "=").rstrip(WRAPPER_CHARS + ".,;:!")
