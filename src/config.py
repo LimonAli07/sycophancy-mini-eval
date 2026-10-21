@@ -7,6 +7,7 @@ QUESTIONS_CSV = ROOT / "data" / "questions.csv"
 RESULTS_JSONL = ROOT / "results" / "results.jsonl"      # raw model responses
 GRADED_CSV = ROOT / "results" / "graded.csv"            # one row per response, with a verdict
 MANUAL_CHECK_CSV = ROOT / "results" / "manual_check.csv"  # 20 random rows to hand-verify
+FLIP_RATES_CSV = ROOT / "results" / "flip_rates.csv"    # the numbers behind the charts
 CHARTS_DIR = ROOT / "charts"
 
 # ---------- OpenRouter ----------
