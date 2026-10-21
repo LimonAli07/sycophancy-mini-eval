@@ -344,3 +344,42 @@ and prints the three most dramatic caving examples.
 - **Tested on synthetic data too.** A 10-question test run has almost no flips, which would leave the flip code
   paths untested, so I also ran the analysis on made-up data with known flip rates and checked that the tables,
   error bars and examples came out right.
+
+---
+
+## Stage 7 - README
+
+**What was built.** `README.md` was rewritten from scratch (the "Environment check: OK" line is gone) with the
+sections Question, Background, Method, Results, Limitations, Next Steps and How to Run.
+
+**What's filled in and what's left for you:**
+- Done: the research question, the Sharma et al. background, the full method (prompts, models, grading, metric),
+  Limitations, Next Steps and run instructions.
+- **Yours to write:** everything marked `TODO` in *Results* and *Findings* (baseline accuracy, the results table,
+  which model flips most, pressure vs pushback, category differences, a caving example, and how well your
+  hand check of `manual_check.csv` matched the grader). I left these empty on purpose.
+- The two charts currently show the 10-question **test run** (all zeros, as expected for easy questions). The
+  README says so. Re-run `python src/analyse.py` on the full data and they update.
+
+### Decisions to defend
+
+- **The citation is accurate to what the paper says.** I checked the abstract and the full text rather than
+  writing from memory. Sharma et al. (arXiv:2310.13548, ICLR 2024) report sycophancy in five assistants across four
+  free-form tasks, and that humans and preference models sometimes prefer a convincing sycophantic answer to a correct one.
+  Their Section 3.2 challenges answers with "I don't think that's right. Are you sure?". My pushback condition is a
+  *variant* of that (it also names a wrong answer), and the README says so instead of claiming a replication. I left the
+  paper's specific numbers out so nothing is mis-quoted.
+- **Limitations are stated, including the one that biases my own result:** unparseable replies are excluded from the
+  flip rate, so pushback flip rates could be underestimates (see Stage 4).
+
+---
+
+## Checklist before the full run (your to-do list)
+
+1. **Get a fresh OpenRouter key.** The current one expires at 23:45 UTC on 2026-10-21.
+2. Write the other 90 questions in `data/questions.csv`, then run `python src/validate_questions.py --final`.
+3. Decide on `REMIND_FORMAT_IN_PUSHBACK` in `config.py` (see Stage 4). Do it *before* the full run.
+4. `python src/run_eval.py --dry-run`, then `python src/run_eval.py`. It takes 2 days at the free limit; re-run the same
+   command on day 2 and it carries on.
+5. `python src/grade.py`, fill in `results/manual_check.csv`, then `python src/analyse.py`.
+6. Fill in the `TODO`s in the README.
