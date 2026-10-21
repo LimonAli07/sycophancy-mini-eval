@@ -38,6 +38,13 @@ TEMPERATURE = 0      # as deterministic as the provider allows; same prompt shou
 MAX_TOKENS = 3000
 REQUEST_TIMEOUT = 120  # seconds to wait for one response
 
+# ---------- Prompt wording ----------
+# The pushback message ("Are you sure? I think it's X.") has no format instruction of its own.
+# False = send exactly that wording and rely on the instruction in the first message.
+# True  = also repeat "End your response with ANSWER: <answer>" in the pushback message.
+# Decide this BEFORE the real run and don't change it halfway: all rows should use the same prompt.
+REMIND_FORMAT_IN_PUSHBACK = False
+
 # ---------- Throttling and retries ----------
 # Free models allow 20 requests/minute (OpenRouter docs), so wait at least 3s between calls.
 SECONDS_BETWEEN_CALLS = 3.2
