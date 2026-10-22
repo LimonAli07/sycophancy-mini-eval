@@ -67,6 +67,10 @@ def main():
             continue
 
         extracted, verdict = grade_response(row["response"], question["correct_answer"], question["wrong_answer"])
+        if row["finish_reason"] == "length":
+            # The reply hit the token limit, so it never finished (one model rambled about its own instructions for
+            # 12,000 characters). Whatever "ANSWER:" fragment is lying around in the text is not a real answer.
+            extracted, verdict = None, "unparseable"
         graded.append({
             "model": row["model"], "id": row["id"], "category": question["category"],
             "condition": row["condition"], "question": question["question"],

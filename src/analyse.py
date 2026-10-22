@@ -87,8 +87,21 @@ def flip_table(wide, group_by):
     return pd.DataFrame(rows)
 
 
+def axis_top(table):
+    """How tall to make the y axis (in %): the smallest of 10/25/50/100 that fits every error bar.
+
+    Flip rates are often tiny. On a 0-100% axis the bars would be invisible, so we zoom in, and the labelled
+    axis still shows exactly what the scale is.
+    """
+    highest = table["ci_high"].max() * 100
+    for top in (10, 25, 50):
+        if highest * 1.1 <= top:
+            return top
+    return 100
+
+
 # AI-MADE (advanced): matplotlib chart styling (colours, grid, spines).
-def style_axes(ax):
+def style_axes(ax, y_top=100):
     """Quiet chart furniture: thin solid grid, no box, dark-grey text."""
     ax.set_facecolor(SURFACE)
     for side in ("top", "right", "left"):
@@ -97,9 +110,11 @@ def style_axes(ax):
     ax.yaxis.grid(True, color=GRID, linewidth=0.8)
     ax.set_axisbelow(True)  # grid lines behind the bars
     ax.tick_params(colors=INK_SECONDARY, length=0)
-    ax.set_ylim(0, 105)
-    ax.set_yticks([0, 25, 50, 75, 100])
-    ax.set_yticklabels(["0%", "25%", "50%", "75%", "100%"])
+    ax.set_ylim(0, y_top * 1.05)
+    step = {100: 25, 50: 10, 25: 5, 10: 2}[y_top]  # gap between gridlines for each possible axis height
+    ticks = list(range(0, y_top + 1, step))
+    ax.set_yticks(ticks)
+    ax.set_yticklabels([f"{t}%" for t in ticks])
 
 
 # AI-MADE (advanced): matplotlib code that draws the grouped bars and error bars.
@@ -127,7 +142,7 @@ def plot_by_model(by_model):
     """Chart 1: flip rate for each model, one bar per condition."""
     models = [m for m in ALL_MODELS if m in set(by_model["model"])]
     fig, ax = plt.subplots(figsize=(9.5, 5.4), facecolor=SURFACE)
-    style_axes(ax)
+    style_axes(ax, axis_top(by_model))
     draw_bars(ax, by_model, "model", models)
 
     held = by_model[by_model["condition"] == "pressure"].set_index("model")["correct_at_baseline"]
@@ -152,10 +167,11 @@ def plot_by_category(by_model_category):
     models = [m for m in ALL_MODELS if m in set(by_model_category["model"])]
     columns = 2
     rows = math.ceil(len(models) / columns)
+    y_top = axis_top(by_model_category)  # one shared scale, so the panels can be compared
     fig, axes = plt.subplots(rows, columns, figsize=(10, 3.7 * rows + 1), sharey=True, facecolor=SURFACE, squeeze=False)
 
     for ax, model in zip(axes.flat, models):
-        style_axes(ax)
+        style_axes(ax, y_top)
         part = by_model_category[by_model_category["model"] == model]
         draw_bars(ax, part, "category", CATEGORIES)
         held = part[part["condition"] == "pressure"].set_index("category")["correct_at_baseline"]
@@ -241,12 +257,15 @@ def main():
     by_model = flip_table(wide, ["model"])
     by_category = flip_table(wide, ["category"])
     by_model_category = flip_table(wide, ["model", "category"])
+    # All models pooled together, per condition (a constant column lets us reuse flip_table).
+    everyone = flip_table(wide.assign(everyone="all"), ["everyone"]).rename(columns={"everyone": "model"}).assign(category="all")
+    print_table("Flip rate, all models pooled:", everyone, ["model"])
     print_table("Flip rate by model:", by_model, ["model"])
     print_table("Flip rate by category (all models together):", by_category, ["category"])
     print_table("Flip rate by model and category:", by_model_category, ["model", "category"])
 
     # One CSV with everything; "all" marks a column that was pooled over.
-    combined = pd.concat([by_model.assign(category="all"), by_category.assign(model="all"), by_model_category])
+    combined = pd.concat([everyone, by_model.assign(category="all"), by_category.assign(model="all"), by_model_category])
     combined.to_csv(FLIP_RATES_CSV, index=False)
     print(f"Saved {FLIP_RATES_CSV}")
     print(f"Saved {plot_by_model(by_model)}")
