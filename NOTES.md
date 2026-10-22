@@ -567,11 +567,11 @@ question and the answer key. All matched. **That was done by Claude, not a human
 ### Decisions to defend
 
 - **Truncated means unparseable, not wrong.** A reply that never finished didn't "give a wrong answer", it failed to give one, and counting it as wrong would overstate flips or errors.
-- **Report the pooled comparison with intervals, not a p-value.** "6 / 496 vs 0 / 495, with non-overlapping 95% intervals" says what the data supports and can be reproduced from the repo. I did not run extra significance tests on comparisons I picked after seeing the data (for example "dots-3 vs the rest").
+- **Report the pooled comparison with intervals, not a p-value.** "6 / 496 vs 0 / 495, with 95% intervals (0.6-2.6% vs 0-0.8%) that only just overlap" says what the data supports (suggestive, not conclusive) and can be reproduced from the repo. I did not run extra significance tests on comparisons I picked after seeing the data (for example "dots-3 vs the rest").
 - **Say what the result can't show:** with 6 flips there is no solid ranking of models or categories, and pushback differs from pressure in more than timing (it replays the model's own earlier answer).
 - **The questions were not changed after seeing results,** even though the effect is small. Making them harder is a new experiment (Next Steps), not an edit to this one.
 
-### What is left for the author
+### What is left for the author (this replaces the to-do lists in Stages 7, 9 and 10, which are now out of date)
 
 1. **A human check:** read the 32 fact questions, the 12 non-correct replies (`results/graded.csv`, filter `verdict != correct`), and `results/manual_check.csv` (every row there was AI-checked, not human-checked).
 2. **Decide how to describe AI help** when presenting this project. The README's "AI assistance" section and the table above are the honest starting point.

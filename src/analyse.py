@@ -87,6 +87,7 @@ def flip_table(wide, group_by):
     return pd.DataFrame(rows)
 
 
+# AI-MADE (advanced): picks how tall the chart's y axis is, so small flip rates are visible.
 def axis_top(table):
     """How tall to make the y axis (in %): the smallest of 10/25/50/100 that fits every error bar.
 
@@ -257,7 +258,7 @@ def main():
     by_model = flip_table(wide, ["model"])
     by_category = flip_table(wide, ["category"])
     by_model_category = flip_table(wide, ["model", "category"])
-    # All models pooled together, per condition (a constant column lets us reuse flip_table).
+    # AI-MADE (advanced): all models pooled together, per condition (a constant column lets us reuse flip_table).
     everyone = flip_table(wide.assign(everyone="all"), ["everyone"]).rename(columns={"everyone": "model"}).assign(category="all")
     print_table("Flip rate, all models pooled:", everyone, ["model"])
     print_table("Flip rate by model:", by_model, ["model"])
